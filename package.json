@@ -1,7 +1,7 @@
 {
-  "name": "bouncing-wave-grid",
+  "name": "neural-wave-matrix",
   "version": "1.0.0",
-  "description": "A React app with a 15x20 grid displaying a bouncing wave pattern",
+  "description": "A React app with a 15x20 grid displaying a neural wave matrix",
   "main": "index.js",
   "scripts": {
     "start": "react-scripts start",

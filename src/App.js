@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 
 const App = () => {
-  const [gridSize, setGridSize] = useState({ rows: 15, cols: 20 });
+  const [gridSize, setGridSize] = useState({ rows: 15, cols: 12 });
   const [wavePosition, setWavePosition] = useState(0);
   const [waveDirection, setWaveDirection] = useState(1);
   const [colorPhase, setColorPhase] = useState(0);
@@ -67,6 +67,9 @@ const App = () => {
   useEffect(() => {
     if (!isPlaying) return;
 
+    // Invert slider value so higher slider -> faster animation (smaller delay)
+    const delayMs = 480 - speed; // slider range 80-400 maps to delay 400-80
+
     const interval = setInterval(() => {
       setWavePosition(prev => {
         const newPos = prev + waveDirection;
@@ -82,13 +85,13 @@ const App = () => {
       });
       
       setColorPhase(prev => (prev + 1) % 240); // 240 cycles = 4 seconds at 100ms intervals
-    }, speed);
+    }, delayMs);
 
     return () => clearInterval(interval);
   }, [isPlaying, waveDirection, gridSize.cols, speed]);
 
   const handleGridSizeChange = (type, value) => {
-    const newValue = Math.max(5, Math.min(30, parseInt(value) || 5));
+    const newValue = Math.max(8, Math.min(type === 'rows' ? 25 : 20, parseInt(value) || 8));
     setGridSize(prev => ({
       ...prev,
       [type]: newValue
@@ -108,48 +111,11 @@ const App = () => {
   return (
     <div className="app">
       <div className="header">
-        <h1 className="title">🌊 Bouncing Wave Grid</h1>
-        <div className="controls">
-          <div className="control-group">
-            <label>Rows: {gridSize.rows}</label>
-            <input
-              type="range"
-              min="5"
-              max="30"
-              value={gridSize.rows}
-              onChange={(e) => handleGridSizeChange('rows', e.target.value)}
-            />
-          </div>
-          <div className="control-group">
-            <label>Cols: {gridSize.cols}</label>
-            <input
-              type="range"
-              min="5"
-              max="30"
-              value={gridSize.cols}
-              onChange={(e) => handleGridSizeChange('cols', e.target.value)}
-            />
-          </div>
-          <div className="control-group">
-            <label>Speed: {speed}ms</label>
-            <input
-              type="range"
-              min="50"
-              max="500"
-              value={speed}
-              onChange={(e) => setSpeed(parseInt(e.target.value))}
-            />
-          </div>
-          <button onClick={togglePlayPause} className="play-button">
-            {isPlaying ? '⏸️ Pause' : '▶️ Play'}
-          </button>
-          <button onClick={resetWave} className="reset-button">
-            🔄 Reset
-          </button>
-        </div>
+        <h1 className="title">⚡ NEURAL WAVE MATRIX ⚡</h1>
       </div>
 
-      <div className="grid-container">
+      <div className="main-content">
+        <div className="grid-container">
         <div 
           className="grid"
           style={{
@@ -172,24 +138,66 @@ const App = () => {
             ))
           )}
         </div>
+        </div>
+
+        <div className="controls">
+          <div className="control-group">
+            <label>ROWS: {gridSize.rows}</label>
+            <input
+              type="range"
+              min="8"
+              max="25"
+              value={gridSize.rows}
+              onChange={(e) => handleGridSizeChange('rows', e.target.value)}
+            />
+          </div>
+          <div className="control-group">
+            <label>COLS: {gridSize.cols}</label>
+            <input
+              type="range"
+              min="8"
+              max="20"
+              value={gridSize.cols}
+              onChange={(e) => handleGridSizeChange('cols', e.target.value)}
+            />
+          </div>
+          <div className="control-group">
+            <label>SPEED: {speed}</label>
+            <input
+              type="range"
+              min="80"
+              max="400"
+              value={speed}
+              onChange={(e) => setSpeed(Math.max(80, Math.min(400, parseInt(e.target.value) || 150)))}
+            />
+          </div>
+          <div className="button-container">
+            <button onClick={togglePlayPause} className="play-button">
+              {isPlaying ? '⏸ PAUSE' : '▶ PLAY'}
+            </button>
+            <button onClick={resetWave} className="reset-button">
+              🔄 RESET
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="info-panel">
         <div className="stats">
           <div className="stat">
-            <span className="stat-label">Wave Position:</span>
+            <span className="stat-label">WAVE POS:</span>
             <span className="stat-value">{wavePosition.toFixed(1)}</span>
           </div>
           <div className="stat">
-            <span className="stat-label">Color Phase:</span>
+            <span className="stat-label">PHASE:</span>
             <span className="stat-value">{Math.floor(colorPhase / 40) + 1}/6</span>
           </div>
           <div className="stat">
-            <span className="stat-label">Next Color:</span>
+            <span className="stat-label">NEXT CYCLE:</span>
             <span className="stat-value">{Math.ceil((240 - colorPhase) / 40)}s</span>
           </div>
           <div className="stat">
-            <span className="stat-label">Direction:</span>
+            <span className="stat-label">DIRECTION:</span>
             <span className="stat-value">{waveDirection > 0 ? '→' : '←'}</span>
           </div>
         </div>
